@@ -1,4 +1,4 @@
-const app = require('src/app');
+const app = require('./src/app');
 const config = require('./config/config');
 const logger = require('./library/logger');
 let server;

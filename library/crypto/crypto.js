@@ -3,8 +3,8 @@ const dotenv = require('dotenv');
 const path = require('path');
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-const ENCRYPTION_KEY = crypto.scryptSync(process.env.APP_KEY, 'salt', 32); // Change this key
-const IV = Buffer.alloc(16, 0); // IV for encryption
+const ENCRYPTION_KEY = crypto.scryptSync(process.env.APP_KEY, 'salt', 32);
+const IV = Buffer.alloc(16, 0);
 
 // Encryption Helper Functions
 const encryptData = (data) => {
