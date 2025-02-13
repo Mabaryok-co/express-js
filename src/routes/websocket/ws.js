@@ -1,11 +1,11 @@
-import { WebSocketServer } from 'ws';
+const { WebSocketServer } = require('ws');
+const express = require("express");
 const router = express.Router();
-
 // WebSocket server
 const wss = new WebSocketServer({ noServer: true });
 
 // API route to validate and proxy WebSocket connections
-router.get('', validateToken, (req, res) => {
+router.get('', (req, res) => {
     if (!req.headers.upgrade || req.headers.upgrade.toLowerCase() !== 'websocket') {
         return res.status(400).send('Expected a WebSocket upgrade');
     }
@@ -13,7 +13,7 @@ router.get('', validateToken, (req, res) => {
     // Proxy to WebSocket server
     server.on('upgrade', (request, socket, head) => {
         wss.handleUpgrade(request, socket, head, (ws) => {
-        wss.emit('connection', ws, request);
+            wss.emit('connection', ws, request);
         });
     });
 
@@ -35,4 +35,3 @@ wss.on('connection', (ws, req) => {
 });
 
 module.exports = router;
-  

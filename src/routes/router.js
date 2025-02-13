@@ -1,11 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const rest = require("./rest/routes");
-const graphql = require("./graphql/routes");
-const ws = require("./websocket/ws");
+const rest = require("./rest/router");
+// const graphql = require("./graphql/routes");
 
 router.use("/rest", rest);
-router.use("/graphql", graphql);
-router.use("/ws", ws);
+// router.use("/graphql", graphql);
 
 module.exports = router;

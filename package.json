@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/Mabaryok-co/express-js#readme",
   "dependencies": {
+    "compression": "^1.8.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "helmet": "^8.0.0",

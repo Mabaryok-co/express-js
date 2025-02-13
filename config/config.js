@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
 const Joi = require('joi');
-const { encryptData, decryptData } = require('../library/crypto');
+const { encryptData, decryptData } = require('../library/crypto/crypto');
 
 const CONFIG_FILE = path.join(__dirname, 'config.json');
 
@@ -24,20 +24,20 @@ const envVarsSchema = Joi.object({
   NODE_ENV: Joi.string().valid('production', 'development', 'test').required(),
   PORT: Joi.number().default(3000),
   APP_URL: Joi.string().required(),
-  APP_SECRET: Joi.string().required(),
+  APP_KEY: Joi.string().required(),
   
   JWT_SECRET: Joi.string().required(),
   JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(30),
   JWT_RESET_PASSWORD_EXPIRATION_MINUTES: Joi.number().default(10),
   JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: Joi.number().default(10),
   
-  SMTP_HOST: Joi.string().optional(),
-  SMTP_PORT: Joi.number().optional(),
-  SMTP_USERNAME: Joi.string().optional(),
-  SMTP_PASSWORD: Joi.string().optional(),
-  EMAIL_FROM: Joi.string().optional(),
+  SMTP_HOST: Joi.string().optional().allow(''),
+  SMTP_PORT: Joi.number().optional().allow(''),
+  SMTP_USERNAME: Joi.string().optional().allow(''),
+  SMTP_PASSWORD: Joi.string().optional().allow(''),
+  EMAIL_FROM: Joi.string().optional().allow(''),
 
-  LOG_DIR: Joi.string().default(null),
+  LOG_DIR: Joi.string().allow('').default(null),
   LOG_LEVEL: Joi.string().valid('debug','info','verbose','http','warn','error').required(),
   LOG_MAX_SIZE: Joi.number().required(),
   LOG_MAX_AGE: Joi.number().required(),
@@ -56,7 +56,7 @@ if (error) {
 
 // Save to File if Missing
 if (!fs.existsSync(CONFIG_FILE)) {
-  fs.writeFileSync(CONFIG_FILE, JSON.stringify(encryptData(envVars)), 'utf8');
+  fs.writeFileSync(CONFIG_FILE, encryptData(JSON.stringify(envVars)), 'utf8');
 }
 
 const config = {
@@ -64,7 +64,7 @@ const config = {
   port: envVars.PORT,
   appName: envVars.APPNAME,
   appUrl: envVars.APP_URL,
-  appSecret: envVars.APP_SECRET,
+  appSecret: envVars.APP_KEY,
   log: {
     directory: envVars.LOG_DIR,
     levels: envVars.LOG_LEVEL,
@@ -113,6 +113,6 @@ const updateConfig = (newConfig) => {
   // Apply the new configuration in-memory
   Object.assign(config, value);
 };
-  
+
 
 module.exports = { config, updateConfig };

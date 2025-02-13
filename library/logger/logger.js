@@ -1,9 +1,10 @@
 const winston = require('winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
 const path = require('path');
-const config = require('../../config/config');
+const { config } = require('../../config/config');
 
 const logDirectory = path.join(__dirname, '../../logs'); // Log files location
+const logPath = config.log.directory || logDirectory;
 
 const datePattern = (frequency) => {
   switch (frequency) {
@@ -18,8 +19,8 @@ const datePattern = (frequency) => {
 
 const dailyRotateTransport = new DailyRotateFile({
     filename: `${config.appName}-%DATE%.log`,
-    dirname: config.log.directory || logDirectory,
-    datePattern: datePattern(config.log.frequency), 
+    dirname: logPath,
+    datePattern: datePattern(config.log.frequency),
     zippedArchive: config.log.zipped,
     maxSize: `${config.log.maxSize}m`,
     maxFiles: `${config.log.maxAges}d`,

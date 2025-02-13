@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const cors = require('cors');
 const routes = require('./routes/router');
+const ws = require("./routes/websocket/ws");
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.options('*', cors());
 
 //api routes
 app.use("/api",routes);
+app.use("/ws", ws);
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {

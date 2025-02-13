@@ -1,5 +1,8 @@
 ## Currently used library *keep it minimal
 
+### optimization
+- compression
+
 ### Webserver
 - express
 - ws
@@ -22,3 +25,4 @@
 
 ### Security
 - helmet
+- cors

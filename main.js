@@ -1,6 +1,6 @@
 const app = require('./src/app');
-const config = require('./config/config');
-const logger = require('./library/logger');
+const {config} = require('./config/config');
+const logger = require('./library/logger/logger');
 let server;
 
 const exitHandler = () => {
