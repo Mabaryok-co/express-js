@@ -2,7 +2,7 @@
   "name": "express_template",
   "version": "1.0.0",
   "description": "A template for future use",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,6 +21,14 @@
   },
   "homepage": "https://github.com/Mabaryok-co/express-js#readme",
   "dependencies": {
-    "express": "^4.21.2"
+    "compression": "^1.8.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "joi": "^17.13.3",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0",
+    "ws": "^8.18.0"
   }
 }
