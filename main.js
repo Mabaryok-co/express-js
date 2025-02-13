@@ -20,7 +20,7 @@ const unexpectedErrorHandler = (error) => {
 };
 
 function main() {
-  server = app.listen(config.port, () => {
+  process.server = app.listen(config.port, () => {
     logger.info(`Listening to port ${config.port}`);
   });
 }
