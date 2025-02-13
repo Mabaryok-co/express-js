@@ -2,7 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const compression = require('compression');
 const cors = require('cors');
-const routes = require('./routes/routes');
+const routes = require('./routes/router');
 
 const app = express();
 
@@ -27,7 +27,7 @@ app.use(cors());
 app.options('*', cors());
 
 //api routes
-app.use(routes);
+app.use("/api",routes);
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
