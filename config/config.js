@@ -20,22 +20,29 @@ const loadConfigFromFile = () => {
 
 // Validate Configuration Schema
 const envVarsSchema = Joi.object({
-    APPNAME: Joi.string().required(),
-    NODE_ENV: Joi.string().valid('production', 'development', 'test').required(),
-    PORT: Joi.number().default(3000),
-    APP_URL: Joi.string().required(),
-    APP_SECRET: Joi.string().required(),
-    
-    JWT_SECRET: Joi.string().required(),
-    JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(30),
-    JWT_RESET_PASSWORD_EXPIRATION_MINUTES: Joi.number().default(10),
-    JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: Joi.number().default(10),
-    
-    SMTP_HOST: Joi.string().optional(),
-    SMTP_PORT: Joi.number().optional(),
-    SMTP_USERNAME: Joi.string().optional(),
-    SMTP_PASSWORD: Joi.string().optional(),
-    EMAIL_FROM: Joi.string().optional(),
+  APPNAME: Joi.string().required(),
+  NODE_ENV: Joi.string().valid('production', 'development', 'test').required(),
+  PORT: Joi.number().default(3000),
+  APP_URL: Joi.string().required(),
+  APP_SECRET: Joi.string().required(),
+  
+  JWT_SECRET: Joi.string().required(),
+  JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(30),
+  JWT_RESET_PASSWORD_EXPIRATION_MINUTES: Joi.number().default(10),
+  JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: Joi.number().default(10),
+  
+  SMTP_HOST: Joi.string().optional(),
+  SMTP_PORT: Joi.number().optional(),
+  SMTP_USERNAME: Joi.string().optional(),
+  SMTP_PASSWORD: Joi.string().optional(),
+  EMAIL_FROM: Joi.string().optional(),
+
+  LOG_DIR: Joi.string().default(null),
+  LOG_LEVEL: Joi.string().valid('debug','info','verbose','http','warn','error').required(),
+  LOG_MAX_SIZE: Joi.number().required(),
+  LOG_MAX_AGE: Joi.number().required(),
+  LOG_ZIPPED: Joi.boolean().default(false),
+  LOG_FREQUENCY: Joi.string().valid('daily','hourly').required(),
 }).unknown();
 
 // Load Configuration (From File or .env)
@@ -55,6 +62,17 @@ if (!fs.existsSync(CONFIG_FILE)) {
 const config = {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
+  appName: envVars.APPNAME,
+  appUrl: envVars.APP_URL,
+  appSecret: envVars.APP_SECRET,
+  log: {
+    directory: envVars.LOG_DIR,
+    levels: envVars.LOG_LEVEL,
+    maxSize: envVars.LOG_MAX_SIZE,
+    maxAges: envVars.LOG_MAX_AGE,
+    zipped: envVars.LOG_ZIPPED,
+    frequency: envVars.LOG_FREQUENCY,
+  },
   jwt: {
     secret: envVars.JWT_SECRET,
     accessExpirationMinutes: envVars.JWT_ACCESS_EXPIRATION_MINUTES,
@@ -77,24 +95,24 @@ const config = {
 
 // Update Config at Runtime
 const updateConfig = (newConfig) => {
-    // Load existing config from file
-    const existingConfig = loadConfigFromFile() || config;
-  
-    // Merge newConfig into existing config
-    const updatedConfig = { ...existingConfig, ...newConfig };
-  
-    // Validate merged config
-    const { value, error } = envVarsSchema.validate(updatedConfig);
-    if (error) {
-      throw new Error(`Invalid configuration: ${error.message}`);
-    }
-  
-    // Save encrypted config back to file
-    fs.writeFileSync(CONFIG_FILE, JSON.stringify(encryptData(value)), 'utf8');
-  
-    // Apply the new configuration in-memory
-    Object.assign(config, value);
-  };
+  // Load existing config from file
+  const existingConfig = loadConfigFromFile() || config;
+
+  // Merge newConfig into existing config
+  const updatedConfig = { ...existingConfig, ...newConfig };
+
+  // Validate merged config
+  const { value, error } = envVarsSchema.validate(updatedConfig);
+  if (error) {
+    throw new Error(`Invalid configuration: ${error.message}`);
+  }
+
+  // Save encrypted config back to file
+  fs.writeFileSync(CONFIG_FILE, JSON.stringify(encryptData(value)), 'utf8');
+
+  // Apply the new configuration in-memory
+  Object.assign(config, value);
+};
   
 
 module.exports = { config, updateConfig };

@@ -5,13 +5,25 @@ const config = require('../../config/config');
 
 const logDirectory = path.join(__dirname, '../../logs'); // Log files location
 
+const datePattern = (frequency) => {
+  switch (frequency) {
+    case "daily":
+      return "YYYY-MM-DD";
+    case "hourly":
+      return "YYYY-MM-DD-HH";
+    default:
+      return "YYYY-MM-DD";
+  }
+}
+
 const dailyRotateTransport = new DailyRotateFile({
-    filename: path.join(logDirectory, 'app-%DATE%.log'), // Log file pattern
-    datePattern: 'YYYY-MM-DD', // New log file every day
-    zippedArchive: true, // Compress old log files
-    maxSize: '20m', // Max file size before creating a new file
-    maxFiles: '14d', // Keep logs for 14 days
-    level: config.env === 'development' ? 'debug' : 'info',
+    filename: `${config.appName}-%DATE%.log`,
+    dirname: config.log.directory || logDirectory,
+    datePattern: datePattern(config.log.frequency), 
+    zippedArchive: config.log.zipped,
+    maxSize: `${config.log.maxSize}m`,
+    maxFiles: `${config.log.maxAges}d`,
+    level: config.log.levels,
 });
 
 const enumerateErrorFormat = winston.format((info) => {
@@ -22,7 +34,7 @@ const enumerateErrorFormat = winston.format((info) => {
 });
 
 const logger = winston.createLogger({
-  level: config.env === 'development' ? 'debug' : 'info',
+  level: config.log.levels,
   format: winston.format.combine(
     enumerateErrorFormat(),
     config.env === 'development' ? winston.format.colorize() : winston.format.uncolorize(),

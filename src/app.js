@@ -27,7 +27,7 @@ app.use(cors());
 app.options('*', cors());
 
 //api routes
-app.use('', routes);
+app.use(routes);
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
