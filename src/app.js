@@ -3,7 +3,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const cors = require('cors');
 const routes = require('./routes/router');
-const ws = require("./routes/websocket/ws");
+const ws = require("@websocket/ws");
 
 const app = express();
 

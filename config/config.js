@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
 const Joi = require('joi');
-const { encryptData, decryptData } = require('../library/crypto/crypto');
+const { encryptData, decryptData } = require('@crypto');
 
 const CONFIG_FILE = path.join(__dirname, 'config.json');
 
@@ -54,11 +54,6 @@ if (error) {
   throw new Error(`Config validation error: ${error.message}`);
 }
 
-// Save to File if Missing
-if (!fs.existsSync(CONFIG_FILE)) {
-  fs.writeFileSync(CONFIG_FILE, encryptData(JSON.stringify(envVars)), 'utf8');
-}
-
 const config = {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
@@ -76,7 +71,6 @@ const config = {
   jwt: {
     secret: envVars.JWT_SECRET,
     accessExpirationMinutes: envVars.JWT_ACCESS_EXPIRATION_MINUTES,
-    refreshExpirationDays: envVars.JWT_REFRESH_EXPIRATION_DAYS,
     resetPasswordExpirationMinutes: envVars.JWT_RESET_PASSWORD_EXPIRATION_MINUTES,
     verifyEmailExpirationMinutes: envVars.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES,
   },
@@ -93,13 +87,43 @@ const config = {
   },
 };
 
+const configFile = (vars) => ({
+  APPNAME: vars.appName,
+  NODE_ENV: vars.env,
+  PORT: vars.port,
+  APP_URL: vars.appUrl,
+  APP_KEY: vars.appSecret,
+  
+  JWT_SECRET:vars.jwt.secret,
+  JWT_ACCESS_EXPIRATION_MINUTES: vars.jwt.accessExpirationMinutes,
+  JWT_RESET_PASSWORD_EXPIRATION_MINUTES: vars.jwt.resetPasswordExpirationMinutes,
+  JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: vars.jwt.verifyEmailExpirationMinutes,
+  
+  SMTP_HOST: vars.email.smtp.host,
+  SMTP_PORT: vars.email.smtp.port,
+  SMTP_USERNAME: vars.email.smtp.auth.user,
+  SMTP_PASSWORD: vars.email.smtp.auth.pass,
+  EMAIL_FROM: vars.email.from,
+
+  LOG_DIR: vars.log.directory,
+  LOG_LEVEL: vars.log.levels,
+  LOG_MAX_SIZE:  vars.log.maxSize,
+  LOG_MAX_AGE:  vars.log.maxAges,
+  LOG_ZIPPED: vars.log.zipped,
+  LOG_FREQUENCY:vars.log.frequency,
+})
+// Save to File if Missing
+if (!fs.existsSync(CONFIG_FILE)) {
+  fs.writeFileSync(CONFIG_FILE, encryptData(JSON.stringify(configFile(config))), 'utf8');
+}
+
 // Update Config at Runtime
 const updateConfig = (newConfig) => {
   // Load existing config from file
-  const existingConfig = loadConfigFromFile() || config;
+  const existingConfig = loadConfigFromFile() || configFile(config);
 
   // Merge newConfig into existing config
-  const updatedConfig = { ...existingConfig, ...newConfig };
+  const updatedConfig = { ...existingConfig, ...configFile(newConfig) };
 
   // Validate merged config
   const { value, error } = envVarsSchema.validate(updatedConfig);
@@ -108,7 +132,7 @@ const updateConfig = (newConfig) => {
   }
 
   // Save encrypted config back to file
-  fs.writeFileSync(CONFIG_FILE, JSON.stringify(encryptData(value)), 'utf8');
+  fs.writeFileSync(CONFIG_FILE, encryptData(JSON.stringify(value)), 'utf8');
 
   // Apply the new configuration in-memory
   Object.assign(config, value);

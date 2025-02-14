@@ -1,6 +1,7 @@
+require('module-alias/register')
 const app = require('./src/app');
-const {config} = require('./config/config');
-const logger = require('./library/logger/logger');
+const {config} = require('@config');
+const logger = require('@logger');
 let server;
 
 const exitHandler = () => {
