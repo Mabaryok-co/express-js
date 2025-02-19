@@ -5,6 +5,11 @@ const world = (req, res) => {
     logger.debug("Hello World!");
     logger.error("Hello World!");
     logger.warn("Hello World!");
+    try {
+        throw new Error("this is error");
+    } catch (error) {
+        logger.error(error);
+    }
     res.status(200).send("Hello World!");
 };
 

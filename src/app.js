@@ -1,5 +1,5 @@
 const express = require('express');
-const helmet = require('helmet');
+const helmet = require('helmet').default;
 const compression = require('compression');
 const cors = require('cors');
 const routes = require('./routes/router');

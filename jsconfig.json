@@ -9,20 +9,21 @@
         "strictFunctionTypes": true,
         "baseUrl": ".",
         "paths": {
-            "@root"      : ["./*"],
-            "@config"    : ["./config/config"],
-            "@logger"    : ["library/logger/logger"],
-            "@crypto"    : ["library/crypto/crypto"],
-            "@handler"   : ["src/handler/*"],
-            "@middleware": ["src/middleware/*"],
-            "@utils"     : ["src/utils/*"],
-            "@rest"      : ["src/routes/rest/*"],
-            "@graphql"   : ["src/routes/graphql/*"],
-            "@websocket" : ["src/routes/websocket/*"]
+            "@root/*"      : ["./*"],
+            "@config"      : ["./config/config"],
+            "@logger"      : ["library/logger/logger"],
+            "@crypto"      : ["library/crypto/crypto"],
+            "@handler/*"   : ["src/handler/*"],
+            "@middleware/*": ["src/middleware/*"],
+            "@utils/*"     : ["src/utils/*"],
+            "@rest/*"      : ["src/routes/rest/*"],
+            "@graphql/*"   : ["src/routes/graphql/*"],
+            "@websocket/*" : ["src/routes/websocket/*"]
         }
     },
     "exclude": [
         "node_modules",
-        "**/node_modules/*"
+        "**/node_modules/*",
+        "config/config.json"
     ]
 }

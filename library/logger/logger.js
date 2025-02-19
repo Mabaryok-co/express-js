@@ -18,9 +18,13 @@ const datePattern = (frequency) => {
 }
 
 const logCaller = winston.format((info) => {
+  if(!(info.level === 'debug' || info.level === 'error')) {
+    info.caller = info.label ? `[${info.label}]` : '[NOLABEL]';
+    return info; 
+  }
   // Capture the stack trace
-  const stack = new Error().stack;
-
+  let stack = new Error().stack;
+  
   // Extract the relevant stack line (skipping current function and Winston internals)
   const stackLines = stack.split('\n');
   const callerLine = stackLines[10]; // Line 3 in the stack trace is usually the caller
@@ -29,9 +33,9 @@ const logCaller = winston.format((info) => {
   const match = callerLine.match(/\(([^)]+)\)/); // Matches '(file.js:line:column)'
   if (match && match[1]) {
     const filePath = match[1];
-    info.caller = path.basename(filePath); // Add caller file name to log metadata
+    info.caller = `[${path.basename(filePath)}]`; // Add caller file name to log metadata
   } else {
-    info.caller = 'unknown';
+    info.caller = '[NOLABEL]';
   }
   return info;
 });
@@ -51,24 +55,16 @@ const dailyRotateTransport = new DailyRotateFile({
   maxSize: `${config.log.maxSize}m`,
   maxFiles: `${config.log.maxAges}d`,
   level: config.log.levels,
-  format: winston.format.combine(
-    logCaller(),
-    enumerateErrorFormat(),
-    winston.format.uncolorize(),
-    winston.format.splat(),
-    winston.format.printf(({ timestamp ,level, caller, message }) => `[${timestamp}] [${caller}] ${level.toUpperCase()} ${message}`)
-  ),
 });
 
 const logger = winston.createLogger({
   level: config.log.levels,
   format: winston.format.combine(
-    logCaller(),
     enumerateErrorFormat(),
-    winston.format.colorize(),
+    logCaller(),
     winston.format.splat(),
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    winston.format.printf(({ timestamp ,level, caller, message }) => `[${timestamp}] [${caller}] ${level} ${message}`)
+    winston.format.printf(({ timestamp ,level, caller, message, stack }) => `[${timestamp}] ${level.toUpperCase()} ${caller} ${message??stack}`)
   ),
   transports: [
     new winston.transports.Console({
