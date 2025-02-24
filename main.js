@@ -1,11 +1,11 @@
+require('module-alias/register')
 const app = require('./src/app');
-const {config} = require('./config/config');
-const logger = require('./library/logger/logger');
-let server;
+const {config} = require('@config');
+const logger = require('@logger');
 
 const exitHandler = () => {
-  if (server) {
-    server.close(() => {
+  if (process.server) {
+    process.server.close(() => {
       logger.info('Server closed');
       process.exit(1);
     });
@@ -30,8 +30,8 @@ process.on('unhandledRejection', unexpectedErrorHandler);
 
 process.on('SIGTERM', () => {
   logger.info('SIGTERM received');
-  if (server) {
-    server.close();
+  if (process.server) {
+    process.server.close();
   }
 });
 

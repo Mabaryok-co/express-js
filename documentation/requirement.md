@@ -7,6 +7,9 @@
 - express
 - ws
 
+### clean code
+- module-alias
+
 ### Logging
 - winston
 - winston-daily-rotate-file

@@ -1,9 +1,9 @@
 const express = require('express');
-const helmet = require('helmet');
+const helmet = require('helmet').default;
 const compression = require('compression');
 const cors = require('cors');
 const routes = require('./routes/router');
-const ws = require("./routes/websocket/ws");
+const ws = require("@websocket/ws");
 
 const app = express();
 
