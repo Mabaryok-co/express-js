@@ -4,6 +4,9 @@ const compression = require('compression');
 const cors = require('cors');
 const routes = require('./routes/router');
 const ws = require("@websocket/ws");
+const {config} = require("@config");
+const {logHttp} = require("@middleware/logHttp");
+const logger = require('@root/library/logger/logger');
 
 const app = express();
 
@@ -16,6 +19,11 @@ app.use(express.json());
 // parse urlencoded request body
 app.use(express.urlencoded({ extended: true }));
 
+
+// Log HTTP Request & Response
+if (config.log.http) {
+  app.use(logHttp);
+}
 // sanitize request data
 // Sanitize xss
 // Sanitize sqlinjection

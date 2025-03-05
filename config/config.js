@@ -43,6 +43,7 @@ const envVarsSchema = Joi.object({
   LOG_MAX_AGE: Joi.number().required(),
   LOG_ZIPPED: Joi.boolean().default(false),
   LOG_FREQUENCY: Joi.string().valid('daily','hourly').required(),
+  LOG_HTTP: Joi.boolean().default(false),
 }).unknown();
 
 // Load Configuration (From File or .env)
@@ -53,7 +54,6 @@ const { value: envVars, error } = envVarsSchema.validate(loadedConfig);
 if (error) {
   throw new Error(`Config validation error: ${error.message}`);
 }
-
 const config = {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
@@ -67,6 +67,7 @@ const config = {
     maxAges: envVars.LOG_MAX_AGE,
     zipped: envVars.LOG_ZIPPED,
     frequency: envVars.LOG_FREQUENCY,
+    http: envVars.LOG_HTTP
   },
   jwt: {
     secret: envVars.JWT_SECRET,
@@ -111,6 +112,7 @@ const configFile = (vars) => ({
   LOG_MAX_AGE:  vars.log.maxAges,
   LOG_ZIPPED: vars.log.zipped,
   LOG_FREQUENCY:vars.log.frequency,
+  LOG_HTTP:vars.log.http
 })
 // Save to File if Missing
 if (!fs.existsSync(CONFIG_FILE)) {
